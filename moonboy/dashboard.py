@@ -11,7 +11,12 @@ exchange_df = pd.DataFrame(ccxt.exchanges)
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 available_exchanges = exchange_df[0].unique()
 exchange = getattr (ccxt, default_exchange)
-print(exchange)
+df = pd.DataFrame(eval(exchange))
+if exchange.has['fetchOHLCV'] == True:
+    timeframes = pd.Series(exchange.timeframes)
+
+
+
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -20,6 +25,8 @@ colors = {
     'text': '#7FDBFF'
 }
 
+
+app.logger.info('%s exchange', timeframes)
 app.layout = html.Div([
     dcc.Dropdown(
         id='exchange-dropdown',
