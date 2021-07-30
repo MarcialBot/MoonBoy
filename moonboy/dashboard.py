@@ -1,6 +1,5 @@
 
 # DASHBOARD COMPONENT
-#
 
 import dash
 import dash_core_components as dcc
@@ -9,13 +8,12 @@ from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 import plotly.subplots as subplot
 import pandas as pd
-from .data.exchange import Exchange
 from .templates.layout import html_layout
 import ccxt
 from datetime import datetime
 import calendar
 import dash_bootstrap_components as dbc
-
+from .data.exchange import Exchange
 
 def init_dashboard(server):
     # Initializes the dashboard view which displays all components
@@ -26,15 +24,13 @@ def init_dashboard(server):
         external_stylesheets=[dbc.themes.MINTY]
     )
 
-    # EXCHANGE CLASS
-
-    # Defaults
+    # DEFAULTS
     ticker_pair = ("ETH/USDT")
     exchange_name = ("coinbasepro")
     timeframe = ("1m")
 
-    # Methods
-    exchange = getattr(ccxt, exchange_name) ()
+    # VARIABLES
+    exchange = Exchange(exchange_name).api
     markets = exchange.load_markets()
     ticker = exchange.fetch_ticker(ticker_pair)
     ohlcv = exchange.fetch_ohlcv(ticker_pair,timeframe)
@@ -43,6 +39,8 @@ def init_dashboard(server):
     df = pd.DataFrame(ohlcv, columns = ['Timeframe', 'Open', 'High', 'Low', 'Close', 'Volume'])
     df['Timeframe'] = [datetime.fromtimestamp(float(time)/1000) for time in df['Timeframe']]
 
+    
+    # CANDLESTICK LAYOUT 
     candle_layout = dict(
         title = ticker_pair,
         xaxis = go.layout.XAxis(title=go.layout.xaxis.Title(text='Time')),
@@ -57,7 +55,7 @@ def init_dashboard(server):
 
     candle_fig = go.Figure(data=candlesticks,layout=candle_layout)
 
-    # Views
+    # VIEWS
     # Initializes other components
     # - Add calls to exchange class inits
     dash_app.layout=html.Div(
