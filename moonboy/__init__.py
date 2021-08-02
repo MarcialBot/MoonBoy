@@ -14,8 +14,9 @@ def init_app():
         from . import routes
 
         #Import Dash App
-        from .dashboard import init_dashboard
-        app = init_dashboard(app)
+        from .dashboard import Dashboard
+        app = Dashboard(app)
+        app = app.create_layout()
 
         return app
 
